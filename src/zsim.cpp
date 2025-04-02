@@ -28,12 +28,14 @@
 
 #include "zsim.h"
 #include <algorithm>
-#include <signal.h>
+/* 加入define 同master版本 */
+#define _SIGNAL_H
+#include <bits/signum.h>
+#undef _SIGNAL_H
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <fstream>
 #include <iostream>
-#include <libunwind.h>
 #include <sched.h>
 #include <sstream>
 #include <string>
