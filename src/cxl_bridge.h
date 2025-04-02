@@ -33,8 +33,9 @@ class CXLBridge : public MemObject{
         int valid_ports_per_switch;
         uint64_t PCIeFreqKHz; // PCIe3.0 [4GHz] ; PCIe4.0 [8GHz] ; PCIe5.0 [16GHz] ; PCIe6.0 [32GHz] ; [same as CXL]
         Address max_address_range;
-        g_vector<std::pair<Address,Address>> switches_ranges;
-        g_vector<CXLSwitch> cxl_switches;
+        Address min_address_range; // Exact DRAM MAX RANGE
+        g_vector<std::pair<Address,Address>> switches_ranges; // Each CXL-Switch's Memory Range (from low-index to high index)
+        g_vector<CXLSwitch> cxl_switches; // CXLSwitch Objects Collection
         // do we really need queue here ??
 
 
@@ -43,6 +44,7 @@ class CXLBridge : public MemObject{
         int switch_select(MemReq& req);
         uint64_t transfer_delay_in_PCIe(int switches);
         uint64_t forward_to_detaild_port(MemReq& req, int data_size); // depend on `switch_select` & `protocal_analyze_bound_phase`
+        Address get_max_range(){return max_address_range;};
         bool check_cxl_range(Address addr);
         int return_max_ports(){return valid_ports_per_switch;};
 };

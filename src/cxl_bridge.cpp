@@ -8,6 +8,27 @@
 
 #define DEBUG(args...)
 
+/** 
+ * @author Jiahao Lu
+ * Architecture is as following: 
+ * **********************************************************************************************************
+ *          CPU
+ *           |    
+ *           | 
+ *  Top-Level Controller 
+ *           | 
+ *     ------ -------                           MC0  MC1  MC2  MC3              MC0  MC1  MC2  MC3
+ *     |      |     |                           |    |    |    |                |    |    |    |
+ *  DRAMCtrl  |     |              CXLBridge    ----------------    CXLBridge    ---------------
+ *            |  PCIe [CXL Port] --------------|  CXL-Switch-0 | ---------------|  CXL-Switch-1 |----------...
+ *            |                   Bus & Retimer ----------------  Bus & Retimer  ---------------
+ *           Disk                               |    |    |    |                |    |    |    | 
+ *                                              MC4  MC5  MC6  MC7              MC4  MC5  MC6  MC7
+ * 
+ * ***********************************************************************************************************
+ */
+
+
 /**
  * @brief analyze CXL request type
  */
@@ -67,7 +88,16 @@ uint64_t CXLBridge::transfer_delay_in_PCIe(int switches)
 {
     return (switches + 1) * retimer_latency; // + switchToBusCycle
 }
+ 
 
+bool CXLBridge::check_cxl_range(Address address)
+{
+    return (address < max_address_range && address >= min_address_range)? true : false; 
+}
+
+/**
+ * @brief: forward req to specific cxl_memory port
+ */
 uint64_t CXLBridge::forward_to_detaild_port(MemReq& req, int data_size)
 {
     int cxl_req_type = protocal_analyze_bound_phase(req, data_size);
@@ -82,4 +112,7 @@ uint64_t CXLBridge::forward_to_detaild_port(MemReq& req, int data_size)
     req.cycle = cxl_switches[cxl_switch].forward_to_detailed_cxl_memory(req);
     return req.cycle;
 }
+
+
+
 
