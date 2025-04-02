@@ -3,4 +3,5 @@ This work-in-progress open-source project extends the native ZSim simulator to s
 
 * The design documentation will be located in the `/design` directory
 * The source code will reside in the `/src` directory. 
+
 Subsequent updates will be synchronized periodically.
