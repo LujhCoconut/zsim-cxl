@@ -58,9 +58,11 @@ def buildSim(cppFlags, dir, type, pgo=None):
     # NOTE (dsm 16 Apr 2015): Update flags code to support Pin 2.14 while retaining backwards compatibility
     # NOTE (gaomy May 2019): Set ABI version
     # NOTE (gaomy Sept 2020): Add -Wno-unused-function for the template ilog2
-    env["CPPFLAGS"] += " -g -std=c++0x -Wall -Wno-unknown-pragmas -fomit-frame-pointer -fno-stack-protector"
+    # env["CPPFLAGS"] += " -g -std=c++0x -Wall -Wno-unknown-pragmas -fomit-frame-pointer -fno-stack-protector"
     env["CPPFLAGS"] += " -MMD -DBIGARRAY_MULTIPLIER=1 -DUSING_XED -DTARGET_IA32E -DHOST_IA32E -fPIC -DTARGET_LINUX"
-    env["CPPFLAGS"] += " -fabi-version=2"
+    # env["CPPFLAGS"] += " -fabi-version=2"
+    # jhlu-update
+    env["CPPFLAGS"] += " -fabi-version=2 -D_GLIBCXX_USE_CXX11_ABI=0"
     env["CPPFLAGS"] += " -Wno-unused-function"
 
     # Add more flags and system paths for pintool if with PinCRT.
@@ -156,6 +158,8 @@ def buildSim(cppFlags, dir, type, pgo=None):
     env["LIBS"] = ["config", "hdf5", "hdf5_hl"]
 
     env["LINKFLAGS"] = ""
+    # jhlu-update
+    env["RPATH"] = []
 
     if useIcc:
         # icc libs
@@ -173,6 +177,8 @@ def buildSim(cppFlags, dir, type, pgo=None):
         env["LINKFLAGS"] += " -Wl,-R" + joinpath(HDF5PATH, "lib")
         env["LIBPATH"] += [joinpath(HDF5PATH, "lib")]
         env["CPPPATH"] += [joinpath(HDF5PATH, "include")]
+        # jhlu-update
+        env["RPATH"]   += [joinpath(HDF5PATH, "lib/")]
 
     if "MBEDTLSPATH" in os.environ:
         MBEDTLSPATH = os.environ["MBEDTLSPATH"]
@@ -191,13 +197,13 @@ def buildSim(cppFlags, dir, type, pgo=None):
         env["CPPFLAGS"] += " -D_WITH_POLARSSL_=1 "
 
     # Only include DRAMSim if available
-    if "DRAMSIMPATH" in os.environ:
-        DRAMSIMPATH = os.environ["DRAMSIMPATH"]
-        env["LINKFLAGS"] += " -Wl,-R" + DRAMSIMPATH
-        env["PINLIBPATH"] += [DRAMSIMPATH]
-        env["CPPPATH"] += [DRAMSIMPATH]
-        env["PINLIBS"] += ["dramsim"]
-        env["CPPFLAGS"] += " -D_WITH_DRAMSIM_=1 "
+    # if "DRAMSIMPATH" in os.environ:
+    #     DRAMSIMPATH = os.environ["DRAMSIMPATH"]
+    #     env["LINKFLAGS"] += " -Wl,-R" + DRAMSIMPATH
+    #     env["PINLIBPATH"] += [DRAMSIMPATH]
+    #     env["CPPPATH"] += [DRAMSIMPATH]
+    #     env["PINLIBS"] += ["dramsim"]
+    #     env["CPPFLAGS"] += " -D_WITH_DRAMSIM_=1 "
 
     # addr2line from GNU binutils is used as an independent third-party executable called by zsim when backtracing bugs.
     # Some versions of addr2line seems not working with Pin and causes segfault (e.g., addr2line 2.26.1 + pin 3.11).
