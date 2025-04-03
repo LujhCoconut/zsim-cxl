@@ -26,7 +26,9 @@
  *                                              MC4  MC5  MC6  MC7              MC4  MC5  MC6  MC7
  * 
  * ***********************************************************************************************************
- */
+ * Req -> CXLPort & Bridge (Analyze which type the request is, select specific bus to transfer, caculate latency)
+ * 
+ * /
 
 
 /**
@@ -111,6 +113,15 @@ uint64_t CXLBridge::forward_to_detaild_port(MemReq& req, int data_size)
 
     req.cycle = cxl_switches[cxl_switch].forward_to_detailed_cxl_memory(req);
     return req.cycle;
+}
+
+/**
+ * @brief access <=> forward requests
+ */
+uint64_t CXLBridge::access(MemReq& req)
+{
+    int data_size = 4;
+    return forward_to_detaild_port(req,data_size);
 }
 
 
