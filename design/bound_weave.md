@@ -37,4 +37,22 @@
 * `memory->access(MemReq &req)` 是内存子系统bound阶段的核心功能，以返回最小理论延迟
   * 根据请求类型（读/写）返回预定义的 `minRdDelay` 或 `minWrDelay`。
   * **不修改内存通道状态**，仅用于前端快速预测。
-* 
+* 在`Boyu Tian`在其`zsim-ndp`中关于`weave`阶段的设计是`acceptAccEvent`和`respondAccEvent`两个函数。从命名上，看起来和`gem5`里的`sendTimingReq`以及`sentTimingResp`类似。
+
+
+
+## AccEvent
+
+这个是代码中定义的变量名的一部分，原生`ZSim`的`ddr_mem.h`中就有`DDRMemoryAccEvent`，在`zsim-ndp`代码中也有类似的`MemChannelAccEvent`。
+
+在`ddr_mem.cpp`中，`DDRMemoryAccEvent`被用在`enqueue`函数中；在`zsim-ndp/mem_channel.h`代码中，`MemChannelAccEvent`被用在`acceptAccEvent`和`respondAccEvent`。
+
+* 从注释的角度来看，`AccEvent`是指向响应事件的指针。且该变量一般对应的对象名为`ev`
+
+  * ```c++
+    AccEvent *ev;
+    ```
+
+
+`AccEvent`直接继承了`TimingEvent`
+
